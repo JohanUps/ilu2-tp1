@@ -57,6 +57,55 @@ public class Village {
 		return chaine.toString();
 	}
 
+	public StringBuilder rechercherVendeursProduit(String produit) {
+		StringBuilder ch = new StringBuilder();
+		Etal[] etalsProduit = marche.trouverEtals(produit);
+		if (etalsProduit.length == 0) {
+			ch.append("Il n'y a pas de vendeur qui propose des ");
+			ch.append(produit);
+			ch.append(" au marché");
+		} else {
+			ch.append("Les vendeurs qui proposent des ");
+			ch.append(produit);
+			ch.append(" sont : \n");
+			for (Etal etal : etalsProduit) {
+				ch.append("-");
+				ch.append(etal.getVendeur().getNom());
+				ch.append("\n");
+			}
+		}
+		return ch.append("\n");
+	}
+
+	public StringBuilder installerVendeur(Gaulois vendeur, String produit, int nbProduit) {
+		StringBuilder ch = new StringBuilder();
+		int numEtal = marche.trouverEtalLibre();
+		ch.append("Le vendeur ");
+		ch.append(vendeur.getNom());
+		ch.append(" cherche un etal pour vendre ");
+		ch.append(nbProduit);
+		ch.append(" ");
+		ch.append(produit);
+		ch.append("\n");
+		if (numEtal == -1) {
+			ch.append("Il n'y a malheureusement aucun etal de libre");
+		} else {
+			ch.append(vendeur.getNom());
+			ch.append(" s'installe à l'etal n° ");
+			ch.append(numEtal);
+			marche.utiliserEtal(numEtal, vendeur, produit, nbProduit);
+		}
+		return ch.append("\n");
+	}
+
+	public Etal rechercherEtal(Gaulois vendeur) {
+		return marche.trouverVendeur(vendeur);
+	}
+
+	public String partirVendeur(Gaulois vendeur) {
+		return marche.trouverVendeur(vendeur).libererEtal();
+	}
+
 	private class Marche {
 		private Etal[] etals;
 
@@ -87,7 +136,7 @@ public class Village {
 			Etal[] tabEtalsProduit;
 			int curseurEtalsProduit = 0;
 			for (int i = 0; i < etals.length; i++) {
-				if (etals[i].contientProduit(produit)) {
+				if (etals[i] != null && etals[i].contientProduit(produit)) {
 					nbEtalProduit++;
 				}
 			}
@@ -127,19 +176,7 @@ public class Village {
 				System.out.println(ch);
 			}
 		}
-	}
-
-	public void rechercherVendeursProduit(String produit) {
-		StringBuilder ch = new StringBuilder();
-		Etal[] etalsProduit = marche.trouverEtals(produit);
-		if (etalsProduit == null) {
-			ch.append("Il n'y a pas de vendeur qui propose des ");
-			ch.append(produit);
-			ch.append(" au marché");
-		} else {
-			for (String etal : etalsProduit) {
-	            ch.append(etal.)
-		}
-
+		
+	
 	}
 }
