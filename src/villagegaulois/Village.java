@@ -105,6 +105,10 @@ public class Village {
 	public String partirVendeur(Gaulois vendeur) {
 		return marche.trouverVendeur(vendeur).libererEtal();
 	}
+	
+	public StringBuilder afficherMarche() {
+		return marche.afficherMarche();
+	}
 
 	private class Marche {
 		private Etal[] etals;
@@ -159,13 +163,13 @@ public class Village {
 			return null;
 		}
 
-		public void afficherMarche() {
+		public StringBuilder afficherMarche() {
 			int nbEtalsVide = 0;
 			StringBuilder ch = new StringBuilder("il reste ");
 
 			for (int i = 0; i < etals.length; i++) {
 				if (etals[i].isEtalOccupe()) {
-					etals[i].afficherEtal();
+					ch.append(etals[i].afficherEtal());
 				} else {
 					nbEtalsVide++;
 				}
@@ -173,8 +177,8 @@ public class Village {
 			if (nbEtalsVide > 0) {
 				ch.append(nbEtalsVide);
 				ch.append(" etals libre");
-				System.out.println(ch);
 			}
+			return ch;
 		}
 		
 	
