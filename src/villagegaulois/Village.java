@@ -1,5 +1,6 @@
 package villagegaulois;
 
+import histoire.VillageSansChefExeception;
 import personnages.Chef;
 import personnages.Gaulois;
 
@@ -44,7 +45,9 @@ public class Village {
 		return null;
 	}
 
-	public String afficherVillageois() {
+	public String afficherVillageois() throws VillageSansChefExeception {
+		if(chef == null)
+			throw new VillageSansChefExeception();
 		StringBuilder chaine = new StringBuilder();
 		if (nbVillageois < 1) {
 			chaine.append("Il n'y a encore aucun habitant au village du chef " + chef.getNom() + ".\n");
@@ -59,12 +62,68 @@ public class Village {
 	
 	//Interaction avec la classe interne debut//
 	
-	public void utiliserEtal(int indiceEtal, Gaulois vendeur, String produit, int nbProduit) {
-		marche.utiliserEtal(indiceEtal, vendeur, produit, nbProduit);
+	public String installerVendeur(Gaulois vendeur, String produit,int nbProduit) {
+		StringBuilder message = new StringBuilder(vendeur.getNom());
+		message.append(" cherche un etal pour vendre ");
+		message.append(nbProduit);
+		message.append(" ");
+		message.append(produit);
+		message.append("\n");
+		
+		int indiceEtalLibre = marche.trouverEtalLibre();
+		if(indiceEtalLibre>-1) {
+			marche.utiliserEtal(indiceEtalLibre, vendeur, produit, nbProduit);
+			message.append("Le vendeur ");
+			message.append(vendeur.getNom());
+			message.append(" s'installe à l'étal n°");
+			message.append(indiceEtalLibre+1);
+		}
+		else 
+			message.append("Malheureusement il n'y a plus d'etal disponible");
+		message.append("\n");
+		return message.toString();
+		
 	}
 	
-	int trouverEtalLibre() {
-		return marche.trouverEtalLibre();
+	public Etal rechercherEtal(Gaulois vendeur) {
+		return marche.trouverVendeur(vendeur);
+	}
+	
+	public String partirVendeur(Gaulois vendeur) {
+		StringBuilder message = new StringBuilder("");
+		Etal etalVendeur = marche.trouverVendeur(vendeur);
+		if(etalVendeur != null)
+			message.append(etalVendeur.libererEtal());
+		return message.toString();
+	}
+
+	
+	public String rechercherVendeursProduit(String produit) {
+		StringBuilder message = new StringBuilder();
+		Etal[] etalsProduit = marche.trouverEtals(produit);
+		
+		if(etalsProduit.length == 0) {
+			message.append("Malheureusement ce produit n'est pas vendu sur le marche\n");
+		}
+		else if(etalsProduit.length == 1) {
+			message.append("Seul le vendeur ");
+			message.append(etalsProduit[0].getVendeur().getNom());
+			message.append(" vend des ");
+			message.append(produit);
+			message.append("\n");
+			
+		}
+		else {
+			message.append("Les vendeurs qui proposent des ");
+			message.append(produit);
+			message.append(" sont :\n");
+			for(Etal etal : etalsProduit) {
+				message.append("-");
+				message.append(etal.getVendeur().getNom());
+				message.append("\n");
+			}
+		}
+		return message.toString();
 	}
 	
 	public Etal[] trouverEtals(String produit) {
@@ -78,6 +137,7 @@ public class Village {
 	public String afficherMarche() {
 		return marche.afficherMarche();
 	}
+	
 	
 	
 	
@@ -165,7 +225,7 @@ public class Village {
 					nbEtalOccupe++;
 				}
 			}
-			int nbEtalLibre = etals.length - 1;
+			int nbEtalLibre = etals.length - nbEtalOccupe ;
 			if (nbEtalOccupe == nbEtalLibre) {
 				ch.append("Il n'y a plus d'etals disponible");
 			} else {
